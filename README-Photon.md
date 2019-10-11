@@ -21,7 +21,7 @@ Meanwhile PUN is being imported, navigate to: https://www.photonengine.com/pun a
 ## Step 4:
 When you're account is working, head over to https://dashboard.photonengine.com/en-US/publiccloud to see all your applications.
 
-![Photon Create App](./images/Photon/Photon_Setup1.png?raw=true)
+![Photon Create App](./images/Photon/Photon_Setup1.png)
 
 - Create a new app:
 - **Be careful to choose _PHOTON PUN_ as a type. This will add Unity specific implementations.**
@@ -218,17 +218,77 @@ This will cause the controls only to work on the owner's machine.
 The only thing is, when shooting these bullets will be instantiated locally.
 
 Photon has a different way to instantiate object across a network.
-So let's change our Instantiate().
+So let's change our Instantiate() into this:.
 
 ```C#
 PhotonNetwork.Instantiate("Bullet", SpawnPoint.position, SpawnPoint.rotation);
 ```
+
+Next up, we need to add damage to the other player when hit.
+Now RPC comes along. RPC stands for Remote Procedure Calls. It will execute a function on a different machine.
+
+For us, we need to tell the player who's been hit, that he needs to add some damage.
+
+The new version of it is going to be:
+```C#
+hit.GetComponent<PhotonView>().RPC("AddDamage", RpcTarget.All, _damage);
+```
+It will say hey you, execute this function.
+
+On the PlayerTankControl.cs, we only need to add the following attribute above our AddDamage method and it will be available to be called.
+```C#
+[PunRPC]
+```
+
 
 Photon requires a string for a prefab name. And we need to add a folder named _Resources_ where all networked prefabs have to be.
 Because a bullet will be instantiated across the network it also needs a PhotonView Rigidbody Component. So add that one to the prefab.
 - In this new PhotonView drag it's rigidbody to the observed component. This will cause Photon to sync the cube's position/rotation across the network.
 
 - We also need to change the Bullet script so it's being destroy across the network.
+
+```C#
+using System.Collections;
+using Photon.Pun;
+using UnityEngine;
+
+public class BulletScript : MonoBehaviourPunCallbacks
+{
+    [SerializeField]
+    private int _damage = 50;
+
+    void Start()
+    {
+        if (photonView.IsMine)
+        {
+            StartCoroutine(DestroyBullet());
+            GetComponent<Rigidbody>().AddForce(transform.forward * 450f);
+        }
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        var hit = other.gameObject;
+        if (hit.CompareTag("Player"))
+        {
+            hit.GetComponent<PlayerTankController>().AddDamage(_damage);
+
+            //Now using PhotonNetwork.Destroy()...
+            PhotonNetwork.Destroy(gameObject);
+        }
+    }
+
+    IEnumerator DestroyBullet()
+    {
+        yield return new WaitForSeconds(2);
+
+        //Now using PhotonNetwork.Destroy()...
+        PhotonNetwork.Destroy(gameObject);
+    }
+}
+```
+
+
 
 ```C#
 using System.Collections;
@@ -330,7 +390,7 @@ The final steps will contains a spawn button and a leave button. In this way a n
 - Create a new Canvas in the Room scene.
 - Inside this canvas add 2 buttons, one spawn and one leave button. Place them where you can easily press them.
 
-- Go to the spawn button and add a new OnClick() listener. Drag the Game Manager into this. As an argument call the GameManager script with the SpawnPlayer method.
+- Go to the spawn button and add a new OnClick() listener. Drag the Game Manager into this. As an argument call the GameManager script with the SpawnPlayer method. As a second argument add the button's GameObject and as argument make SetActive to false.
 - For the leave button add a new OnClick() listener as well. Drag the Game Manager into this. As a an argument call the GameManager script with the following method: LeaveRoom().
 
 ## Step 14:
@@ -340,8 +400,10 @@ The final steps will contains a spawn button and a leave button. In this way a n
 
 - Drag its Rigidbody into here. This will sync his position
 - Drag its Transform into here as well. Will sync his rotation. Only check its rotation since we use transform rotation in the script.
-
-# CHECK OF PLAYERCONTROL SCRIPT HIER OOK IN MOET
+- Drag its player script into here as well. This controls that the player will move across the network.
 
 ## Step 15:
+
+**Tip: change player settings to enable resolution dialog. In this way you can easliy run a small windowed version.**
+
 Now build the game and see how awesome your new multiplayer game is!

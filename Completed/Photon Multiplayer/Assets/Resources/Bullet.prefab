@@ -125,7 +125,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _damage: 50
-  _spawnForce: 450
 --- !u!114 &2259767101378783417
 MonoBehaviour:
   m_ObjectHideFlags: 0

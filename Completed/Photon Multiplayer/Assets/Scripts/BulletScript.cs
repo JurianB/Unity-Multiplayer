@@ -21,9 +21,13 @@ public class BulletScript : MonoBehaviourPunCallbacks
         var hit = other.gameObject;
         if (hit.CompareTag("Player"))
         {
-            hit.GetComponent<PlayerTankController>().AddDamage(_damage);
+            hit.GetComponent<PhotonView>().RPC("AddDamage", RpcTarget.All, _damage);
 
-            PhotonNetwork.Destroy(gameObject);
+            //Now using PhotonNetwork.Destroy()...
+            if (photonView.IsMine)
+            {
+                PhotonNetwork.Destroy(gameObject);
+            }
         }
     }
 
@@ -31,6 +35,7 @@ public class BulletScript : MonoBehaviourPunCallbacks
     {
         yield return new WaitForSeconds(2);
 
+        //Now using PhotonNetwork.Destroy()...
         PhotonNetwork.Destroy(gameObject);
     }
 }

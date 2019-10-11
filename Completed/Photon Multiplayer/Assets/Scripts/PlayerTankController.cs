@@ -1,7 +1,7 @@
 using Photon.Pun;
 using UnityEngine;
 
-public class PlayerTankController : MonoBehaviourPunCallbacks
+public class PlayerTankController : MonoBehaviourPunCallbacks, IPunObservable
 {
     public float MovementSpeed = 4f;
     public Transform SpawnPoint;
@@ -27,7 +27,8 @@ public class PlayerTankController : MonoBehaviourPunCallbacks
 
             if (_health <= 0)
             {
-                Destroy(gameObject);
+                // Destroy(gameObject);
+                PhotonNetwork.Destroy(gameObject);
             }
         }
     }
@@ -54,12 +55,18 @@ public class PlayerTankController : MonoBehaviourPunCallbacks
     {
         if (Input.GetButtonDown("Fire1"))
         {
-            Instantiate(BulletPrefab, SpawnPoint.position, SpawnPoint.rotation);
+            PhotonNetwork.Instantiate("Bullet", SpawnPoint.position, SpawnPoint.rotation);
         }
     }
 
+    [PunRPC]
     public void AddDamage(int damage)
     {
         _health -= damage;
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        //TODO: Sending data part here.
     }
 }
