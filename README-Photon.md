@@ -21,7 +21,7 @@ Meanwhile PUN is being imported, navigate to: https://www.photonengine.com/pun a
 ## Step 4:
 When you're account is working, head over to https://dashboard.photonengine.com/en-US/publiccloud to see all your applications.
 
-![Photon Create App](./images/Photon/Photon_Setup1.png)
+![Photon Create App](https://github.com/JurianB/Unity-Multiplayer/blob/master/Images/Photon/Photon_Setup1.png)
 
 - Create a new app:
 - **Be careful to choose _PHOTON PUN_ as a type. This will add Unity specific implementations.**
