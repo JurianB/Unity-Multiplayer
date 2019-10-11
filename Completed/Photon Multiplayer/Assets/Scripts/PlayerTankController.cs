@@ -1,6 +1,7 @@
+using Photon.Pun;
 using UnityEngine;
 
-public class PlayerTankController : MonoBehaviour
+public class PlayerTankController : MonoBehaviourPunCallbacks, IPunObservable
 {
     public float MovementSpeed = 4f;
     public Transform SpawnPoint;
@@ -19,12 +20,15 @@ public class PlayerTankController : MonoBehaviour
 
     void Update()
     {
-        Movement();
-        Shooting();
-
-        if (_health <= 0)
+        if (photonView.IsMine)
         {
-            Destroy(gameObject);
+            Movement();
+            Shooting();
+
+            if (_health <= 0)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 
@@ -50,12 +54,17 @@ public class PlayerTankController : MonoBehaviour
     {
         if (Input.GetButtonDown("Fire1"))
         {
-            var bullet = Instantiate(BulletPrefab, SpawnPoint.position, SpawnPoint.rotation);
+            Instantiate(BulletPrefab, SpawnPoint.position, SpawnPoint.rotation);
         }
     }
 
     public void AddDamage(int damage)
     {
         _health -= damage;
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        throw new System.NotImplementedException();
     }
 }

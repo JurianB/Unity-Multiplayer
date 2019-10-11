@@ -3,6 +3,8 @@ In this guide we will take you through all the steps to install Photon and add m
 
 **We recommend using Unity _2019.2.3f1_.**
 
+# TODO: player name scripts hierin verwerken
+
 ## Step 1: 
 Open Multiplayer-Base as a Unity Project. This will be used to implement Photon Networking.
 
@@ -180,3 +182,36 @@ A new scene is loaded and you can move around!
 The thing is, the controls aren't made for Networking yet. So let's fix this!
 
 ## Step 12:
+Photon uses a PhotonView to 'claim' something that belongs to a user. So we first add a PhotonView component to the player prefab.
+
+We're now going to edit the _PlayerTankController.cs_ to a new version, so it supports networking.
+
+- To support the extended functions from Photon the class must add the following:
+```C#
+using Photon.Pun;
+
+public class PlayerTankController : MonoBehaviourPunCallbacks, IPunObservable
+```
+
+- Inside the Update(), all controls are being called regardless who's the owner so we've got to fix this first.
+
+- We'll wrap around the Movement() and Shooting() inside the following statement:
+```C#
+if (photonView.IsMine)
+{
+    // Methods here
+}
+``` 
+This will cause the controls only to work on the owner's machine.
+The only thing is, when shooting these bullets will be instantiated locally.
+
+Photon has a different way to instantiate object across a network.
+So let's change our Instantiate().
+
+```C#
+PhotonNetwork.Instantiate("Bullet", SpawnPoint.position, SpawnPoint.rotation);
+```
+
+Photon requires a string for a prefab name. And we need to add a folder named _Resources_ where all networked prefabs have to be.
+Because a bullet will be instantiated across the network it also needs a PhotonView Rigidbody Component. So add that one to the prefab.
+- In this new PhotonView drag it's rigidbody to the observed component. This will cause Photon to sync the cube's position/rotation across the network.
