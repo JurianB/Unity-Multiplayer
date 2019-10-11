@@ -313,4 +313,23 @@ public class GameManager : MonoBehaviourPunCallbacks
 ```
 
 ## Step 13:
-TODO: Adding UI en spawn player.
+The final steps will contains a spawn button and a leave button. In this way a new player can spawn into the game and play along.
+
+- Create a new Canvas in the Room scene.
+- Inside this canvas add 2 buttons, one spawn and one leave button. Place them where you can easily press them.
+
+- Go to the spawn button and add a new OnClick() listener. Drag the Game Manager into this. As an argument call the GameManager script with the SpawnPlayer method.
+- For the leave button add a new OnClick() listener as well. Drag the Game Manager into this. As a an argument call the GameManager script with the following method: LeaveRoom().
+
+## Step 14:
+- Go to your player prefab and remove it from the scene. Then in the Project view, drag your player into the Resources folder since it will be instantiated across the network.
+
+- The last thing we need to do is to make sure our PhotonView attached to the player will oberserve the right things.
+
+- Drag its Rigidbody into here. This will sync his position
+- Drag its Transform into here as well. Will sync his rotation. Only check its rotation since we use transform rotation in the script.
+
+# CHECK OF PLAYERCONTROL SCRIPT HIER OOK IN MOET
+
+## Step 15:
+Now build the game and see how awesome your new multiplayer game is!
