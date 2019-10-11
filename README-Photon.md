@@ -111,3 +111,72 @@ public void Connect()
     }
 }
 ```
+
+## Step 10:
+_MonoBehaviourPunCallbacks Callbacks_ uses callback when using networking.
+So when connected to a server Photon callbacks will be called.
+
+We're going to implement these callbacks.
+
+```C#
+#region MonoBehaviourPunCallbacks Callbacks
+
+public override void OnConnectedToMaster()
+{
+    Debug.Log("Launcher: OnConnectedToMaster() was called by PUN");
+
+    // #Critical: The first we try to do is to join a potential existing room. 
+    // If there is, good, else, we'll be called back with OnJoinRandomFailed()
+    if(isConnecting)
+    {
+        PhotonNetwork.JoinRandomRoom();
+    }
+}
+
+
+public override void OnDisconnected(DisconnectCause cause)
+{
+    Debug.LogWarningFormat("Launcher: OnDisconnected() was called by PUN with reason {0}", cause);
+
+    progressLabel.SetActive(false);
+    controlPanel.SetActive(true);
+}
+
+public override void OnJoinRandomFailed(short returnCode, string message)
+{
+    Debug.Log("Launcher() was called by PUN. No random room available, so we create one.\nCalling: PhotonNetwork.CreateRoom");
+
+    // #Critical: we failed to join a random room, maybe none exists or they are all full. No worries, we create a new room.
+    PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = maxPlayersPerRoom });
+}
+
+public override void OnJoinedRoom()
+{
+    Debug.Log("Launcher(): OnJoinedRoom() called by PUN. Now this client is in a room.");
+
+    PhotonNetwork.LoadLevel(1);
+}
+
+
+#endregion
+```
+
+These callbacks will load a new level when joining or hosting a game.
+To set up these loading scenes go to: _File > Build Settings_.
+
+The scene order is:
+(0): Lobby
+(1): Room
+
+## Step 11:
+Now,  we're hooking up the Join button to call the Connect().
+Navigate to your join button, add a new OnClick Listener.
+
+Drag your Launch Manager GameObject into the field and make sure as an argument that the Launcher Script gets called to the Connect() method.
+
+NOWW, when playing the game. Enter a name and press join! 
+A new scene is loaded and you can move around!
+
+The thing is, the controls aren't made for Networking yet. So let's fix this!
+
+## Step 12:
