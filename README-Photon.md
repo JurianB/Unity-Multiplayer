@@ -21,12 +21,22 @@ Meanwhile PUN is being imported, navigate to: https://www.photonengine.com/pun a
 ## Step 4:
 When you're account is working, head over to https://dashboard.photonengine.com/en-US/publiccloud to see all your applications.
 
+![Photon Create App](./images/Photon/Photon_Setup1.png)
+
 - Create a new app:
 - **Be careful to choose _PHOTON PUN_ as a type. This will add Unity specific implementations.**
 - Give it a name and create it
 
+![Photon Create App](./images/Photon/Photon_Setup2.png)
+
 ## Step 5:
 Go to your created app and find its App Id, this will be used to setup Networking with Unity. Go back to Unity and insert it in the settings.
+
+![Setup Settings](./images/Photon/Step1_Setup.png)
+
+And add your id in App Id Realtime:
+
+![Setup Settings](./images/Photon/Step2_Setup.png)
 
 ## Step 6:
 Now when running the game, you can move around by pressing your WASD-keys. Look around by moving your mouse and you can shoot by pressing your left mouse button.
@@ -40,7 +50,7 @@ You can place it where ever you want, as long as you can still use it.
 - Next up, we want to create a new panel inside the Canvas. To create one, select your Canvas in the Hierachy and right mouse to: _UI > Button_. Call it "Join Button" and place it down below the input field. Give the button the text "Join". 
 
 If you're doing it all correct, you would see something like this:
-[IMAGE]
+![Setup Settings](./images/Photon/UI_Setup_Lobby.png)
 
 - Create a label inside the Canvas. _UI > Text_ and call it "Connect Text". This will show if the game is connecting to a room. So change the content text to "Connecting...". Place this Text above the input field and disable it in the scene.
 
@@ -165,6 +175,8 @@ public override void OnJoinedRoom()
 
 These callbacks will load a new level when joining or hosting a game.
 To set up these loading scenes go to: _File > Build Settings_.
+
+![Build Settings](./images/Photon/Build_Settings.png)
 
 The scene order is:
 (0): Lobby
