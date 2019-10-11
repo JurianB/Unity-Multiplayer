@@ -44,15 +44,12 @@ Now when running the game, you can move around by pressing your WASD-keys. Look 
 ## Step 7:
 Now we're going to create a new scene that acts as a sort of begin screen. In here you can enter a Photon Nickname (which is required to create or join a game).
 
-- Create a new scene called _Lobby_. In here we're going to create a new inputfield by going to: _GameObject > UI > Input Field_. This field be used to enter a playername.
-You can place it where ever you want, as long as you can still use it.
+- Create a new scene called _Lobby_. In here we're going to create a button select your Canvas in the Hierachy and right mouse to: _UI > Button_. Call it "Join Button" and place it in the center of the screen. Give the button the text "Join". 
 
-- Next up, we want to create a new panel inside the Canvas. To create one, select your Canvas in the Hierachy and right mouse to: _UI > Button_. Call it "Join Button" and place it down below the input field. Give the button the text "Join". 
+- Create a label inside the Canvas. _UI > Text_ and call it "Connect Text". This will show if the game is connecting to a room. So change the content text to "Connecting...". Place this Text above the input field and disable it in the scene.
 
 If you're doing it all correct, you would see something like this:
 ![Setup Settings](./images/Photon/UI_Setup_Lobby.png)
-
-- Create a label inside the Canvas. _UI > Text_ and call it "Connect Text". This will show if the game is connecting to a room. So change the content text to "Connecting...". Place this Text above the input field and disable it in the scene.
 
 ## Step 8:
 Now we're ready to setup a script that will cause Photon to host a game for us.
@@ -176,11 +173,11 @@ public override void OnJoinedRoom()
 These callbacks will load a new level when joining or hosting a game.
 To set up these loading scenes go to: _File > Build Settings_.
 
-![Build Settings](./images/Photon/Build_Settings.png)
-
 The scene order is:
 (0): Lobby
 (1): Room
+
+![Build Settings](./images/Photon/Build_Settings.png)
 
 ## Step 11:
 Now,  we're hooking up the Join button to call the Connect().
@@ -188,13 +185,15 @@ Navigate to your join button, add a new OnClick Listener.
 
 Drag your Launch Manager GameObject into the field and make sure as an argument that the Launcher Script gets called to the Connect() method.
 
-NOWW, when playing the game. Enter a name and press join! 
+NOWW, when playing the game, press join! 
 A new scene is loaded and you can move around!
 
-The thing is, the controls aren't made for Networking yet. So let's fix this!
+The thing is, the controls aren't made for Networking yet... So let's fix this!
 
 ## Step 12:
-Photon uses a PhotonView to 'claim' something that belongs to a user. So we first add a PhotonView component to the player prefab.
+Photon uses a PhotonView to identify an object across the network (viewID) and configures how the controlling client updates remote instances.
+
+So we first add a PhotonView component to the player prefab to make sure it will be configured for networking.
 
 We're now going to edit the _PlayerTankController.cs_ to a new version, so it supports networking.
 
@@ -202,8 +201,18 @@ We're now going to edit the _PlayerTankController.cs_ to a new version, so it su
 ```C#
 using Photon.Pun;
 
-public class PlayerTankController : MonoBehaviourPunCallbacks
+public class PlayerTankController : MonoBehaviourPunCallbacks, IPunObservable
 ```
+
+The last thing will ask to implement this:
+```C#
+ public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+{
+    //TODO: Sending data part here.
+}
+```
+In here you can specify your own networking controls if needed. But we leave it empty for now.
+
 
 - Inside the Update(), all controls are being called regardless who's the owner so we've got to fix this first.
 
@@ -227,26 +236,11 @@ PhotonNetwork.Instantiate("Bullet", SpawnPoint.position, SpawnPoint.rotation);
 Next up, we need to add damage to the other player when hit.
 Now RPC comes along. RPC stands for Remote Procedure Calls. It will execute a function on a different machine.
 
-For us, we need to tell the player who's been hit, that he needs to add some damage.
+For us, we need to tell the player who's been hit, that he needs to add some damage from the BulletScript.
+
+- We also need to change the Bullet script so it's being destroy across the network. So there are some minor changes as well in there.
 
 The new version of it is going to be:
-```C#
-hit.GetComponent<PhotonView>().RPC("AddDamage", RpcTarget.All, _damage);
-```
-It will say hey you, execute this function.
-
-On the PlayerTankControl.cs, we only need to add the following attribute above our AddDamage method and it will be available to be called.
-```C#
-[PunRPC]
-```
-
-
-Photon requires a string for a prefab name. And we need to add a folder named _Resources_ where all networked prefabs have to be.
-Because a bullet will be instantiated across the network it also needs a PhotonView Rigidbody Component. So add that one to the prefab.
-- In this new PhotonView drag it's rigidbody to the observed component. This will cause Photon to sync the cube's position/rotation across the network.
-
-- We also need to change the Bullet script so it's being destroy across the network.
-
 ```C#
 using System.Collections;
 using Photon.Pun;
@@ -271,7 +265,8 @@ public class BulletScript : MonoBehaviourPunCallbacks
         var hit = other.gameObject;
         if (hit.CompareTag("Player"))
         {
-            hit.GetComponent<PlayerTankController>().AddDamage(_damage);
+            //hit.GetComponent<PlayerTankController>().AddDamage(_damage);
+            hit.GetComponent<PhotonView>().RPC("AddDamage", RpcTarget.All, _damage);
 
             //Now using PhotonNetwork.Destroy()...
             PhotonNetwork.Destroy(gameObject);
@@ -288,7 +283,25 @@ public class BulletScript : MonoBehaviourPunCallbacks
 }
 ```
 
+It will say hey, you, execute this function.
 
+On the PlayerTankControl.cs, we only need to add the following attribute above our AddDamage method and it will be available to be called.
+```C#
+[PunRPC]
+```
+
+Photon requires a string for a prefab name. And we need to add a folder named _Resources_ where all networked prefabs have to be.
+Because a bullet will be instantiated across the network it also needs a PhotonView Rigidbody Component. So add that one to the prefab.
+- In this new PhotonView drag it's rigidbody to the observed component. This will cause Photon to sync the cube's position/rotation across the network.
+
+![Bullet Setup](./images/Photon/BulletSetup.png)
+
+
+## Step 13:
+To control all players spawning, joining a room or leaving one we create a game manager.
+- Create in the room scene an empty GameObject named Game Manager and create a new script called GameManager and attach it to it.
+
+The code will be below:
 
 ```C#
 using System.Collections;
@@ -384,7 +397,9 @@ public class GameManager : MonoBehaviourPunCallbacks
 }
 ```
 
-## Step 13:
+All these methods will handle things when a player joins a room en when leaving one.
+
+## Step 14:
 The final steps will contains a spawn button and a leave button. In this way a new player can spawn into the game and play along.
 
 - Create a new Canvas in the Room scene.
@@ -393,7 +408,7 @@ The final steps will contains a spawn button and a leave button. In this way a n
 - Go to the spawn button and add a new OnClick() listener. Drag the Game Manager into this. As an argument call the GameManager script with the SpawnPlayer method. As a second argument add the button's GameObject and as argument make SetActive to false.
 - For the leave button add a new OnClick() listener as well. Drag the Game Manager into this. As a an argument call the GameManager script with the following method: LeaveRoom().
 
-## Step 14:
+## Step 15:
 - Go to your player prefab and remove it from the scene. Then in the Project view, drag your player into the Resources folder since it will be instantiated across the network.
 
 - The last thing we need to do is to make sure our PhotonView attached to the player will oberserve the right things.
@@ -402,7 +417,7 @@ The final steps will contains a spawn button and a leave button. In this way a n
 - Drag its Transform into here as well. Will sync his rotation. Only check its rotation since we use transform rotation in the script.
 - Drag its player script into here as well. This controls that the player will move across the network.
 
-## Step 15:
+## Step 16:
 
 **Tip: change player settings to enable resolution dialog. In this way you can easliy run a small windowed version.**
 
