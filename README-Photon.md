@@ -27,16 +27,16 @@ When you're account is working, head over to https://dashboard.photonengine.com/
 - **Be careful to choose _PHOTON PUN_ as a type. This will add Unity specific implementations.**
 - Give it a name and create it
 
-![Photon Create App](./images/Photon/Photon_Setup2.png)
+![Photon Create App](https://github.com/JurianB/Unity-Multiplayer/blob/master/Images/Photon/Photon_Setup2.png)
 
 ## Step 5:
 Go to your created app and find its App Id, this will be used to setup Networking with Unity. Go back to Unity and insert it in the settings.
 
-![Setup Settings](./images/Photon/Step1_Setup.png)
+![Setup Settings](https://github.com/JurianB/Unity-Multiplayer/blob/master/Images/Photon/Step1_Setup.png)
 
 And add your id in App Id Realtime:
 
-![Setup Settings](./images/Photon/Step2_Setup.png)
+![Setup Settings](https://github.com/JurianB/Unity-Multiplayer/blob/master/Images/Photon/Step2_Setup.png)
 
 ## Step 6:
 Now when running the game, you can move around by pressing your WASD-keys. Look around by moving your mouse and you can shoot by pressing your left mouse button.
@@ -49,7 +49,7 @@ Now we're going to create a new scene that acts as a sort of begin screen. In he
 - Create a label inside the Canvas. _UI > Text_ and call it "Connect Text". This will show if the game is connecting to a room. So change the content text to "Connecting...". Place this Text above the input field and disable it in the scene.
 
 If you're doing it all correct, you would see something like this:
-![Setup Settings](./images/Photon/UI_Setup_Lobby.png)
+![Setup Settings](https://github.com/JurianB/Unity-Multiplayer/blob/master/Images/Photon/UI_Setup_Lobby.png)
 
 ## Step 8:
 Now we're ready to setup a script that will cause Photon to host a game for us.
@@ -177,7 +177,7 @@ The scene order is:
 (0): Lobby
 (1): Room
 
-![Build Settings](./images/Photon/Build_Settings.png)
+![Build Settings](https://github.com/JurianB/Unity-Multiplayer/blob/master/Images/Photon/Build_Settings.png)
 
 ## Step 11:
 Now,  we're hooking up the Join button to call the Connect().
@@ -294,7 +294,7 @@ Photon requires a string for a prefab name. And we need to add a folder named _R
 Because a bullet will be instantiated across the network it also needs a PhotonView Rigidbody Component. So add that one to the prefab.
 - In this new PhotonView drag it's rigidbody to the observed component. This will cause Photon to sync the cube's position/rotation across the network.
 
-![Bullet Setup](./images/Photon/BulletSetup.png)
+![Bullet Setup](https://github.com/JurianB/Unity-Multiplayer/blob/master/Images/Photon/BulletSetup.png)
 
 
 ## Step 13:
