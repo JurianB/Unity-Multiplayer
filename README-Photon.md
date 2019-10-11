@@ -312,3 +312,5 @@ public class GameManager : MonoBehaviourPunCallbacks
 }
 ```
 
+## Step 13:
+TODO: Adding UI en spawn player.
