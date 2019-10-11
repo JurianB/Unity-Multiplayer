@@ -190,7 +190,7 @@ We're now going to edit the _PlayerTankController.cs_ to a new version, so it su
 ```C#
 using Photon.Pun;
 
-public class PlayerTankController : MonoBehaviourPunCallbacks, IPunObservable
+public class PlayerTankController : MonoBehaviourPunCallbacks
 ```
 
 - Inside the Update(), all controls are being called regardless who's the owner so we've got to fix this first.
@@ -215,3 +215,47 @@ PhotonNetwork.Instantiate("Bullet", SpawnPoint.position, SpawnPoint.rotation);
 Photon requires a string for a prefab name. And we need to add a folder named _Resources_ where all networked prefabs have to be.
 Because a bullet will be instantiated across the network it also needs a PhotonView Rigidbody Component. So add that one to the prefab.
 - In this new PhotonView drag it's rigidbody to the observed component. This will cause Photon to sync the cube's position/rotation across the network.
+
+- We also need to change the Bullet script so it's being destroy across the network.
+
+```C#
+using System.Collections;
+using Photon.Pun;
+using UnityEngine;
+
+public class BulletScript : MonoBehaviourPunCallbacks
+{
+    [SerializeField]
+    private int _damage = 50;
+
+    void Start()
+    {
+        if (photonView.IsMine)
+        {
+            StartCoroutine(DestroyBullet());
+            GetComponent<Rigidbody>().AddForce(transform.forward * 450f);
+        }
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        var hit = other.gameObject;
+        if (hit.CompareTag("Player"))
+        {
+            hit.GetComponent<PlayerTankController>().AddDamage(_damage);
+
+            PhotonNetwork.Destroy(gameObject);
+        }
+    }
+
+    IEnumerator DestroyBullet()
+    {
+        yield return new WaitForSeconds(2);
+
+        PhotonNetwork.Destroy(gameObject);
+    }
+}
+```
+It will now cause the bullet to be destroyed across the network.
+
+## Step 13:
