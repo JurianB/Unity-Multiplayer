@@ -19,13 +19,12 @@ Click create to create a new *Network Contract*. This Network Contract is basica
 ![Search Result](./Images/Forge/Network-contract-wizard.png)
 
 ## Step 4:
-Name the new contract **PlayerMove**. Add a field to the fields section and name it **Position** which is of type **Vector3**.  
+Name the new contract **PlayerMove**. Add a field to the fields section and name it **position** which is of type **Vector3**.  
 
 Hit the checkbox **Interpolation**, this tells Forge Networking that the position needs to smoothly transition between new updates. Leave the value as is.
 
 
-
-Create a field for the rotation too, name it **Rotation**, which is of type **Quaternion**.
+Create a field for the rotation too, name it **rotation**, which is of type **Quaternion**.
 
 Hit the checkbox **Interpolation**, this tells Forge Networking that the rotation needs to smoothly transition between new updates. Leave the value as is.  
 
@@ -37,7 +36,13 @@ Click **Save & Compile**, this will create quite a few scripts which you can use
 The main thing you will use is the **NetworkObject**. All the new values will be asigned to this object.
 
 ## Step 6:
-Open the **PlayerTankController.cs**. We no longer need to derive from **MonoBehaviour.cs**. Change the class to **PlayerMoveBehaviour**. This will 'inject' the networkObject to the **PlayerTankController** class with all the new information from all other connected clients.
+Open the **PlayerTankController.cs**. We no longer need to derive from **MonoBehaviour.cs**. Change the class to **PlayerMoveBehavior**. This will 'inject' the networkObject to the **PlayerTankController** class with all the new information from all other connected clients.
+
+The class **PlayerMoveBehavior** isn't in the default namespace, so we need to import it.
+
+```csharp
+using BeardedManStudios.Forge.Networking.Generated;
+```
 
 ## Step 7:
 Make sure that you send your own position and rotation over the network by changing the Update method.
