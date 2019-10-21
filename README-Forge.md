@@ -45,7 +45,22 @@ using BeardedManStudios.Forge.Networking.Generated;
 ```
 
 ## Step 7:
-Make sure that you send your own position and rotation over the network by changing the Update method.
+Make sure that you send your own position and rotation over the network by adding the following methods.
+
+
+```csharp
+  void OtherPlayerMovement()
+    {
+        _rigidbody.MovePosition(networkObject.position);
+    }
+
+    void OtherPlayerRotation()
+    {
+        transform.rotation = networkObject.rotation;
+    }
+```
+
+Change the update method:
 
 
 ```csharp
@@ -71,21 +86,8 @@ void Update()
     }
 ```
 
-The networkObject.IsOwner basically checks if the networkobject is assigned to you. The reason for this check is that we only want to get the new positions of **other** players excluding yourself.
+The networkObject.IsOwner basically checks if the networkObject is assigned to you. The reason for this check is that we only want to get the new positions of **other** players excluding yourself.
 
-The OtherPlayerMovement and OtherPlayerRotation is as follows:
-
-```csharp
-  void OtherPlayerMovement()
-    {
-        _rigidbody.MovePosition(networkObject.position);
-    }
-
-    void OtherPlayerRotation()
-    {
-        transform.rotation = networkObject.rotation;
-    }
-```
 
 Change the Movement function to send your position over the network by adding the following line:
 
@@ -123,10 +125,10 @@ public class GameLogic : MonoBehaviour
 ```
 This code is responsible for instantiating the player over the network. So when another player joins, a new tank is spawned in a random position.
 
-## Stap 10:
-Play & test your game.
-
 ## Stap 11:
+Open the **MultiplayerMenu** scene in the *BearderManStudiosFolder->Scenes*. To test with multiple players, press shift+ctrl+b or shift+cmd+b to open the build menu. First add the **MultiplayerMenu** scene and secondly add the **room** scene and press build.
+
+## Stap 12:
 Go back to your network wizard by pressing ctrl + g or cmd + g. Go to the PlayerMoveNetworkObject and add an RPC. Name it Shoot and leave the arguments empty. Click Save & Compile.
 
 Back in your PlayerTankController.cs you will get an error saying that you need to override the method Shoot.
@@ -146,6 +148,13 @@ public override void Shoot(RpcArgs args)
     }
 ```
 
+Since we are working with RPC's we need to import the correct namespaces. Add the following to the top of the class:
+
+```csharp
+using BeardedManStudios.Forge.Networking;
+using BeardedManStudios.Forge.Networking.Unity;
+```
+
 Go back to your networkManager prefab and change the size to 2. Add the bullet prefab to the manager.
 
 Change the Shooting method to the following code:
@@ -162,19 +171,21 @@ void Shooting()
 
 This tells all the other players to instantiate a bullet in their scene.
 
-## Step 12:
+## Step 13:
+Remember to build before testing.
+
 Test & Play. You'll notice that the other player won't die. To fix this we'll create another RPC called Damage.
 
-## Step 13:
+## Step 14:
 Open your network wizard by pressing ctrl + g or cmd + g. Go to the PlayerMoveNetworkObject and add an RPC. Name it Damage and add an argument called damage of type INT. Click Save & Compile.
 
 Back in your PlayerTankController class change the method AddDamage to the following code:
 
 ```csharp
-        public void AddDamage(int damage)
-    {
-        networkObject.SendRpc(RPC_DAMAGE, Receivers.Target, damage);
-    }
+public void AddDamage(int damage)
+{
+    networkObject.SendRpc(RPC_DAMAGE, Receivers.Target, damage);
+}
 
 ```
 
@@ -184,60 +195,62 @@ Add the method Damage which looks like this:
 
 ```csharp
 public override void Damage(RpcArgs args)
+{
+    // RPC calls are not made from the main thread for performance, since we
+    // are interacting with Unity enginge objects, we will need to make sure
+    // to run the logic on the main thread
+    MainThreadManager.Run(() =>
     {
-        // RPC calls are not made from the main thread for performance, since we
-        // are interacting with Unity enginge objects, we will need to make sure
-        // to run the logic on the main thread
-        MainThreadManager.Run(() =>
-        {
-            _health -= args.GetNext<int>();
-        });
-    }
+        _health -= args.GetNext<int>();
+    });
+}
 ```
 
 args.GetNext<int>() is how you extract arguments from an rpc call.
 
-## Step 14:
+## Step 15:
 Play & test. You will notice that the other player still won't die. This is because we haven't told the server when a player needs to die.
 
-## Step 15:
+## Step 16:
 Open your network wizard by pressing ctrl + g or cmd + g. Go to the PlayerMoveNetworkObject and add an RPC.  Name it Die and leave the arguments empty. Click Save & Compile.
 
-## Step 16:
+## Step 17:
 Back in our PlayerTankController class change the update method to the following:
 
 ```csharp
 void Update()
+{
+    if (!networkObject.IsOwner)
     {
-        if (!networkObject.IsOwner)
-        {
-            OtherPlayerMovement();
-            OtherPlayerRotation();
+        OtherPlayerMovement();
+        OtherPlayerRotation();
 
-            return;
-        }
-        else
-        {
-            Movement();
-            Shooting();
-        }
-
-        if (_health <= 0)
-        {
-            Destroy(gameObject);
-            networkObject.SendRpc(RPC_DIE, Receivers.All);
-        }
+        return;
     }
+    else
+    {
+        Movement();
+        Shooting();
+    }
+
+    if (_health <= 0)
+    {
+        Destroy(gameObject);
+        networkObject.SendRpc(RPC_DIE, Receivers.All);
+    }
+}
 ```
 
 When the health is 0 or below we need to tell everyone that we died. Add the RPC method die to the PlayerTankController class.
 
 ```csharp
 public override void Die(RpcArgs args)
-    {
-        networkObject.Destroy();
-    }
+{
+    networkObject.Destroy();
+}
 ```
 
-## Step 17
-Play & test your game. You should now be able to shoot and kill other players.
+## Step 18
+Play & test your game.  Remember to build. 
+
+You should now be able to shoot and kill other players.
