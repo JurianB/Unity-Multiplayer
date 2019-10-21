@@ -3,8 +3,6 @@ In this guide we will take you through all the steps to install Photon and add m
 
 **We recommend using Unity _2019.2.3f1_.**
 
-# TODO: player name scripts hierin verwerken
-
 ## Step 1: 
 Open Multiplayer-Base as a Unity Project. This will be used to implement Photon Networking.
 
@@ -39,12 +37,13 @@ And add your id in App Id Realtime:
 ![Setup Settings](https://github.com/JurianB/Unity-Multiplayer/blob/master/Images/Photon/Step2_Setup.png)
 
 ## Step 6:
+For testing, drag the player prefab into the scene.
 Now when running the game, you can move around by pressing your WASD-keys. Look around by moving your mouse and you can shoot by pressing your left mouse button.
 
 ## Step 7:
 Now we're going to create a new scene that acts as a sort of begin screen to create or join a game.
 
-- Create a new scene called _Lobby_. In here we're going to create a button select your Canvas in the Hierachy and right mouse to: _UI > Button_. Call it "Join Button" and place it in the center of the screen. Give the button the text "Join". 
+- Create a new scene called _Lobby_. In here we're going to create a button. In the Hierachy and right mouse to: _UI > Button_. Call it "Join Button" and place it in the center of the screen. Give the button the text "Join". 
 
 - Create a label inside the Canvas. _UI > Text_ and call it "Connect Text". This will show if the game is connecting to a room. So change the content text to "Connecting...". Place this Text above the button and disable it in the scene.
 
@@ -302,6 +301,8 @@ This will cause Photon to sync the cube's position/rotation across the network.
 
 
 ## Step 13:
+Switch to your Room scene, where all players will be playing and we'll add new thing over here.
+
 To control all players spawning, joining a room or leaving one we create a game manager.
 - Create in the room scene an empty GameObject named Game Manager and create a new script called GameManager and attach it to it.
 
@@ -402,6 +403,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 ```
 
 All these methods will handle things when a player joins a room en when leaving one.
+Drag the player prefab into the PlayerPrefab field to make sure it's not empty when running the game.
 
 ## Step 14:
 The final steps will contains a spawn button and a leave button. In this way a new player can spawn into the game and play along.
@@ -422,6 +424,7 @@ The final steps will contains a spawn button and a leave button. In this way a n
 - Drag its player script into here as well. This controls that the player will move across the network.
 
 ## Step 16:
+Run the game from the lobby and you're good to go.
 
 **Tip: change player settings to enable resolution dialog. In this way you can easliy run a small windowed version.**
 
