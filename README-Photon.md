@@ -30,7 +30,7 @@ When you're account is working, head over to https://dashboard.photonengine.com/
 ![Photon Create App](https://github.com/JurianB/Unity-Multiplayer/blob/master/Images/Photon/Photon_Setup2.png)
 
 ## Step 5:
-Go to your created app and find its App Id, this will be used to setup Networking with Unity. Go back to Unity and insert it in the settings.
+Go to your created app by clicking on manage and find its App Id, this will be used to setup Networking with Unity. Go back to Unity and insert it in the settings.
 
 ![Setup Settings](https://github.com/JurianB/Unity-Multiplayer/blob/master/Images/Photon/Step1_Setup.png)
 
@@ -42,11 +42,11 @@ And add your id in App Id Realtime:
 Now when running the game, you can move around by pressing your WASD-keys. Look around by moving your mouse and you can shoot by pressing your left mouse button.
 
 ## Step 7:
-Now we're going to create a new scene that acts as a sort of begin screen. In here you can enter a Photon Nickname (which is required to create or join a game).
+Now we're going to create a new scene that acts as a sort of begin screen to create or join a game.
 
 - Create a new scene called _Lobby_. In here we're going to create a button select your Canvas in the Hierachy and right mouse to: _UI > Button_. Call it "Join Button" and place it in the center of the screen. Give the button the text "Join". 
 
-- Create a label inside the Canvas. _UI > Text_ and call it "Connect Text". This will show if the game is connecting to a room. So change the content text to "Connecting...". Place this Text above the input field and disable it in the scene.
+- Create a label inside the Canvas. _UI > Text_ and call it "Connect Text". This will show if the game is connecting to a room. So change the content text to "Connecting...". Place this Text above the button and disable it in the scene.
 
 If you're doing it all correct, you would see something like this:
 ![Setup Settings](https://github.com/JurianB/Unity-Multiplayer/blob/master/Images/Photon/UI_Setup_Lobby.png)
@@ -87,7 +87,8 @@ string gameVersion = "1";
 bool isConnecting;
 ```
 
-In the inspector drag your "Connect Text" to your progressLabel field into your script. Drag your connect button into the controlPanel field.
+In the inspector drag your "Connect Text" to your progressLabel field into your script. 
+Next up, Drag your connect button into the controlPanel field.
 
 ## Step 9:
 Replace start with the following and add a new method Connect:
@@ -122,7 +123,7 @@ public void Connect()
 ```
 
 ## Step 10:
-_MonoBehaviourPunCallbacks Callbacks_ uses callback when using networking.
+_MonoBehaviourPunCallbacks_ uses callbacks when using networking.
 So when connected to a server Photon callbacks will be called.
 
 We're going to implement these callbacks.
@@ -177,6 +178,8 @@ The scene order is:
 (0): Lobby
 (1): Room
 
+To add these scenes you can drag and drop them into the scene build window.
+
 ![Build Settings](https://github.com/JurianB/Unity-Multiplayer/blob/master/Images/Photon/Build_Settings.png)
 
 ## Step 11:
@@ -216,7 +219,7 @@ In here you can specify your own networking controls if needed. But we leave it 
 
 - Inside the Update(), all controls are being called regardless who's the owner so we've got to fix this first.
 
-- We'll wrap around the Movement() and Shooting() inside the following statement:
+- We'll wrap around the Movement(), Shooting() and health check inside the following statement:
 ```C#
 if (photonView.IsMine)
 {
@@ -236,11 +239,11 @@ PhotonNetwork.Instantiate("Bullet", SpawnPoint.position, SpawnPoint.rotation);
 Next up, we need to add damage to the other player when hit.
 Now RPC comes along. RPC stands for Remote Procedure Calls. It will execute a function on a different machine.
 
-For us, we need to tell the player who's been hit, that he needs to add some damage from the BulletScript.
+We need to tell the player who's been hit, that he needs to add some damage from the BulletScript.
 
-- We also need to change the Bullet script so it's being destroy across the network. So there are some minor changes as well in there.
+- We also need to change the Bullet script so it's being destroyed across the network. So there are some minor changes as well in there.
 
-The new version of it is going to be:
+The new version of the _BulletScript_ of it is going to be:
 ```C#
 using System.Collections;
 using Photon.Pun;
@@ -291,8 +294,9 @@ On the PlayerTankControl.cs, we only need to add the following attribute above o
 ```
 
 Photon requires a string for a prefab name. And we need to add a folder named _Resources_ where all networked prefabs have to be.
-Because a bullet will be instantiated across the network it also needs a PhotonView Rigidbody Component. So add that one to the prefab.
-- In this new PhotonView drag it's rigidbody to the observed component. This will cause Photon to sync the cube's position/rotation across the network.
+Because a bullet will be instantiated across the network it also needs a Photon Rigidbody View Component. So add that one to the prefab.
+- Drag the Photon Rigidbody View into the observed component attribute in the object's Photon View. 
+This will cause Photon to sync the cube's position/rotation across the network.
 
 ![Bullet Setup](https://github.com/JurianB/Unity-Multiplayer/blob/master/Images/Photon/BulletSetup.png)
 
