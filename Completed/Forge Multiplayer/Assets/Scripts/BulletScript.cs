@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
+
 public class BulletScript : MonoBehaviour
 {
     [SerializeField]
@@ -10,7 +11,7 @@ public class BulletScript : MonoBehaviour
     private int _spawnForce = 450;
 
     void Start()
-    {
+    {        
         Destroy(gameObject, 2);
         GetComponent<Rigidbody>().AddForce(transform.forward * _spawnForce);
     }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerTankController : MonoBehaviour
+public class PlayerTankController : PlayerMoveBehaviour
 {
     public float MovementSpeed = 4f;
     public Transform SpawnPoint;
@@ -35,7 +35,16 @@ public class PlayerTankController : MonoBehaviour
 
         Vector3 velocity = new Vector3(horizontalAxis, 0, verticalAxis) * MovementSpeed * Time.fixedDeltaTime;
 
+        if (!networkObject.IsServer)
+        {
+            _rigidbody.MovePosition(networkObject.position);
+
+            return;
+        }
+
         _rigidbody.MovePosition(transform.position + velocity);
+
+        networkObject.position = transform.position + velocity;
 
         Vector3 targetPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3 relativePos = targetPosition - transform.position;
