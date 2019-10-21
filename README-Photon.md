@@ -417,9 +417,11 @@ The final steps will contains a spawn button and a leave button. In this way a n
 ## Step 15:
 - Go to your player prefab and remove it from the scene. Then in the Project view, drag your player into the Resources folder since it will be instantiated across the network.
 
+- Since our bullet will be spawned across the network, we need to drag the bullet prefab into the resources folder as well.
+
 - The last thing we need to do is to make sure our PhotonView attached to the player will oberserve the right things.
 
-- Drag its Rigidbody into here. This will sync his position
+- Drag its Rigidbody into the player prefab. This will sync his position
 - Drag its Transform into here as well. Will sync his rotation. Only check its rotation since we use transform rotation in the script.
 - Drag its player script into here as well. This controls that the player will move across the network.
 
