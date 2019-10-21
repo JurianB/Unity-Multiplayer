@@ -1,18 +1,19 @@
 ﻿using System.Collections;
+using Photon.Pun;
 using UnityEngine;
 
-public class BulletScript : MonoBehaviour
+public class BulletScript : MonoBehaviourPunCallbacks
 {
     [SerializeField]
     private int _damage = 50;
-    
-    [SerializeField]
-    private int _spawnForce = 450;
 
     void Start()
     {
-        Destroy(gameObject, 2);
-        GetComponent<Rigidbody>().AddForce(transform.forward * _spawnForce);
+        if (photonView.IsMine)
+        {
+            StartCoroutine(DestroyBullet());
+            GetComponent<Rigidbody>().AddForce(transform.forward * 450f);
+        }
     }
 
     private void OnCollisionEnter(Collision other)
@@ -20,9 +21,21 @@ public class BulletScript : MonoBehaviour
         var hit = other.gameObject;
         if (hit.CompareTag("Player"))
         {
-            hit.GetComponent<PlayerTankController>().AddDamage(_damage);
+            hit.GetComponent<PhotonView>().RPC("AddDamage", RpcTarget.All, _damage);
 
-            Destroy(gameObject);
+            //Now using PhotonNetwork.Destroy()...
+            if (photonView.IsMine)
+            {
+                PhotonNetwork.Destroy(gameObject);
+            }
         }
+    }
+
+    IEnumerator DestroyBullet()
+    {
+        yield return new WaitForSeconds(2);
+
+        //Now using PhotonNetwork.Destroy()...
+        PhotonNetwork.Destroy(gameObject);
     }
 }
