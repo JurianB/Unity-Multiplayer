@@ -4,7 +4,7 @@ In this guide we will take you through all the steps to install Photon and add m
 **We recommend using Unity _2019.2.3f1_.**
 
 ## Step 1: 
-Open Multiplayer-Base as a Unity Project. This will be used to implement Photon Networking.
+Open Multiplayer-Base Photon as a Unity Project. This will be used to implement Photon Networking.
 
 ## Step 2:
 Inside Unity navigate to the _Asset Store_ search for  _PUN 2 - FREE_. Download and import this asset.
@@ -37,28 +37,21 @@ And add your id in App Id Realtime:
 ![Setup Settings](https://github.com/JurianB/Unity-Multiplayer/blob/master/Images/Photon/Step2_Setup.png)
 
 ## Step 6:
-For testing, drag the player prefab into the scene.
+For testing purposes, head to the _Room_ scene. Drag the player prefab on the playground.
+
 Now when running the game, you can move around by pressing your WASD-keys. Look around by moving your mouse and you can shoot by pressing your left mouse button.
 
 ## Step 7:
-Now we're going to create a new scene that acts as a sort of begin screen to create or join a game.
+What we need now is a scene that lets the player join or create a room, so switch over to the _Lobby_ scene.
 
-- Create a new scene called _Lobby_. In here we're going to create a button. In the Hierachy and right mouse to: _UI > Button_. Call it "Join Button" and place it in the center of the screen. Give the button the text "Join". 
-
-- Create a label inside the Canvas. _UI > Text_ and call it "Connect Text". This will show if the game is connecting to a room. So change the content text to "Connecting...". Place this Text above the button and disable it in the scene.
-
-If you're doing it all correct, you would see something like this:
-![Setup Settings](https://github.com/JurianB/Unity-Multiplayer/blob/master/Images/Photon/UI_Setup_Lobby.png)
-
-## Step 8:
 Now we're ready to setup a script that will cause Photon to host a game for us.
 
-- In the Hierachy, create a new empty gameobject called _Launch Manager_.
-- Create a new script called _Launcher_ and attach it to this GameObject. 
+- In the Hierachy, head over to the empty gameobject called _Launch Manager_.
+-Open the script, called _Launcher_. 
 
 **Let the coding begin....**
 
-In the Launcher.cs you see this class extends from MonoBehaviour (which Unity made for us). Photon uses it's own, which adds networking features.
+In the Launcher.cs you see this class extends from MonoBehaviour (which Unity made for us). Photon uses it's own version of this, which adds networking features.
 
 We'll swap MonoBehaviour with _MonoBehaviourPunCallbacks_ and import the next two things:
 
@@ -67,37 +60,10 @@ using Photon.Pun;
 using Photon.Realtime;
 ```
 
-Add the following things above the Start() Method:
-
-```C#
-[Tooltip("The maximum number of players per room. When a room is full, it can't be joined by new players, and so new room will be created")]
-[SerializeField]
-private byte maxPlayersPerRoom = 4;
-
-[Tooltip("The UI Panel to let the user enter name, connect and play")]
-[SerializeField]
-private GameObject controlPanel;
-[Tooltip("The UI Label to inform the user that the connection is in progress")]
-[SerializeField]
-private GameObject progressLabel;
-
-string gameVersion = "1";
-
-bool isConnecting;
-```
-
-In the inspector drag your "Connect Text" to your progressLabel field into your script. 
-Next up, Drag your connect button into the controlPanel field.
-
 ## Step 9:
-Replace start with the following and add a new method Connect:
-```C#
-private void Start()
-{
-    progressLabel.SetActive(false);
-    controlPanel.SetActive(true);
-}
+Replace the empty method Connect with the following:
 
+```C#
 // Will connect to a room or join the Photon network.
 public void Connect()
 {
@@ -123,9 +89,10 @@ public void Connect()
 
 ## Step 10:
 _MonoBehaviourPunCallbacks_ uses callbacks when using networking.
-So when connected to a server Photon callbacks will be called.
+So when a client is connected to a server, Photon callbacks will be called to execute something.
 
-We're going to implement these callbacks.
+We're going to implement these callbacks right now.
+The following code will be called when Photon has been connected / disconnected.
 
 ```C#
 #region MonoBehaviourPunCallbacks Callbacks
@@ -170,7 +137,7 @@ public override void OnJoinedRoom()
 #endregion
 ```
 
-These callbacks will load a new level when joining or hosting a game.
+These callbacks will also load a new level when joining or hosting a game.
 To set up these loading scenes go to: _File > Build Settings_.
 
 The scene order is:
@@ -182,11 +149,6 @@ To add these scenes you can drag and drop them into the scene build window.
 ![Build Settings](https://github.com/JurianB/Unity-Multiplayer/blob/master/Images/Photon/Build_Settings.png)
 
 ## Step 11:
-Now,  we're hooking up the Join button to call the Connect().
-Navigate to your join button, add a new OnClick Listener.
-
-Drag your Launch Manager GameObject into the field and make sure as an argument that the Launcher Script gets called to the Connect() method.
-
 NOWW, when playing the game, press join! 
 A new scene is loaded and you can move around!
 
@@ -218,12 +180,9 @@ In here you can specify your own networking controls if needed. But we leave it 
 
 - Inside the Update(), all controls are being called regardless who's the owner so we've got to fix this first.
 
-- We'll wrap around the Movement(), Shooting() and health check inside the following statement:
+- Above the Movement(), Shooting() and health check, we'll add the following statement:
 ```C#
-if (photonView.IsMine)
-{
-    // Methods here
-}
+if (!photonView.IsMine) return;
 ``` 
 This will cause the controls only to work on the owner's machine.
 The only thing is, when shooting these bullets will be instantiated locally.
