@@ -60,7 +60,7 @@ using Photon.Pun;
 using Photon.Realtime;
 ```
 
-## Step 9:
+## Step 8:
 Replace the empty method Connect with the following:
 
 ```C#
@@ -87,7 +87,7 @@ public void Connect()
 }
 ```
 
-## Step 10:
+## Step 9:
 _MonoBehaviourPunCallbacks_ uses callbacks when using networking.
 So when a client is connected to a server, Photon callbacks will be called to execute something.
 
@@ -148,13 +148,13 @@ To add these scenes you can drag and drop them into the scene build window.
 
 ![Build Settings](https://github.com/JurianB/Unity-Multiplayer/blob/master/Images/Photon/Build_Settings.png)
 
-## Step 11:
+## Step 10:
 NOWW, when playing the game, press join! 
 A new scene is loaded and you can move around!
 
 The thing is, the controls aren't made for Networking yet... So let's fix this!
 
-## Step 12:
+## Step 11:
 Photon uses a PhotonView to identify an object across the network (viewID) and configures how the controlling client updates remote instances.
 
 So we first add a PhotonView component to the player prefab to make sure it will be configured for networking.
@@ -260,7 +260,7 @@ This will cause Photon to sync the cube's position/rotation across the network.
 ![Bullet Setup](https://github.com/JurianB/Unity-Multiplayer/blob/master/Images/Photon/BulletSetup.png)
 
 
-## Step 13:
+## Step 12:
 Switch to your Room scene, where all players will be playing and we'll add new thing over here.
 
 To control all players spawning, joining a room or leaving one, we have to use a game manager.
@@ -365,12 +365,12 @@ public class GameManager : MonoBehaviourPunCallbacks
 All these methods will handle things when a player joins a room or when leaving one.
 Drag the player prefab into the PlayerPrefab field to make sure it's not empty when running the game.
 
-## Step 14:
+## Step 13:
 The final steps will contains a spawn button and a leave button. In this way a new player can spawn into the game and play along.
 
 - Enable _Canvas_ and you're good to go
 
-## Step 15:
+## Step 14:
 - Go to your player prefab and remove it from the scene. 
 - In the Project view, drag your player into the Resources folder since it will be instantiated across the network as well.
 
@@ -379,7 +379,7 @@ The last thing we need to do is to make sure our PhotonView attached to the play
 - Drag its Transform into here as well. Will sync his rotation. Only check its rotation since we use transform rotation in the script.
 - Drag its player script into here as well. This controls that the player will move across the network.
 
-## Step 16:
+## Step 15:
 Run the game from the lobby and you're good to go.
 
 **Tip: change player settings to enable resolution dialog. In this way you can easliy run a small windowed version.**
