@@ -50,7 +50,7 @@ public class PlayerTankController : MonoBehaviour
     {
         if (Input.GetButtonDown("Fire1"))
         {
-            var bullet = Instantiate(BulletPrefab, SpawnPoint.position, SpawnPoint.rotation);
+            Instantiate(BulletPrefab, SpawnPoint.position, SpawnPoint.rotation);
         }
     }
 
