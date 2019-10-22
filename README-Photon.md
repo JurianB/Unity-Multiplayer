@@ -170,7 +170,7 @@ public class PlayerTankController : MonoBehaviourPunCallbacks, IPunObservable
 
 The last thing will ask to implement this:
 ```C#
- public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
 {
     //TODO: Sending data part here.
 }
@@ -187,7 +187,7 @@ if (!photonView.IsMine) return;
 This will cause the controls only to work on the owner's machine.
 The only thing is, when shooting these bullets will be instantiated locally.
 
-Photon has a different way to instantiate object across a network.
+Photon has a different way to instantiate objects across a network.
 So let's change our Instantiate() into this:.
 
 ```C#
@@ -251,7 +251,8 @@ On the PlayerTankControl.cs, we only need to add the following attribute above o
 [PunRPC]
 ```
 
-Photon requires a string for a prefab name. And we need to add a folder named _Resources_ where all networked prefabs have to be.
+The first parameter of PhotonNetwork.Instantiate is a string which defines the "prefab" to instantiate. Internally, PUN will fetch the GameObject from the PhotonNetwork.PrefabPool, set it up for the network and enable it. Because of this we need to add a folder named _Resources_ where all networked prefabs have to be.
+
 Because a bullet will be instantiated across the network it also needs a Photon Rigidbody View Component. So add that one to the prefab.
 - Drag the Photon Rigidbody View into the observed component attribute in the object's Photon View. 
 This will cause Photon to sync the cube's position/rotation across the network.
@@ -262,10 +263,10 @@ This will cause Photon to sync the cube's position/rotation across the network.
 ## Step 13:
 Switch to your Room scene, where all players will be playing and we'll add new thing over here.
 
-To control all players spawning, joining a room or leaving one we create a game manager.
-- Create in the room scene an empty GameObject named Game Manager and create a new script called GameManager and attach it to it.
+To control all players spawning, joining a room or leaving one, we have to use a game manager.
+- Go to the empty GameObject named Game Manager and open the script called GameManager.
 
-The code will be below:
+You have to edit the script and add the missing parts. These parts will add networking for you.
 
 ```C#
 using System.Collections;
@@ -361,25 +362,19 @@ public class GameManager : MonoBehaviourPunCallbacks
 }
 ```
 
-All these methods will handle things when a player joins a room en when leaving one.
+All these methods will handle things when a player joins a room or when leaving one.
 Drag the player prefab into the PlayerPrefab field to make sure it's not empty when running the game.
 
 ## Step 14:
 The final steps will contains a spawn button and a leave button. In this way a new player can spawn into the game and play along.
 
-- Create a new Canvas in the Room scene.
-- Inside this canvas add 2 buttons, one spawn and one leave button. Place them where you can easily press them.
-
-- Go to the spawn button and add a new OnClick() listener. Drag the Game Manager into this. As an argument call the GameManager script with the SpawnPlayer method. As a second argument add the button's GameObject and as argument make SetActive to false.
-- For the leave button add a new OnClick() listener as well. Drag the Game Manager into this. As a an argument call the GameManager script with the following method: LeaveRoom().
+- Enable _Canvas_ and you're good to go
 
 ## Step 15:
-- Go to your player prefab and remove it from the scene. Then in the Project view, drag your player into the Resources folder since it will be instantiated across the network.
+- Go to your player prefab and remove it from the scene. 
+- In the Project view, drag your player into the Resources folder since it will be instantiated across the network as well.
 
-- Since our bullet will be spawned across the network, we need to drag the bullet prefab into the resources folder as well.
-
-- The last thing we need to do is to make sure our PhotonView attached to the player will oberserve the right things.
-
+The last thing we need to do is to make sure our PhotonView attached to the player will oberserve the right things.
 - Drag its Rigidbody into the player prefab. This will sync his position
 - Drag its Transform into here as well. Will sync his rotation. Only check its rotation since we use transform rotation in the script.
 - Drag its player script into here as well. This controls that the player will move across the network.
