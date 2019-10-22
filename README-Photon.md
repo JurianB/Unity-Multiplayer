@@ -382,6 +382,6 @@ The last thing we need to do is to make sure our PhotonView attached to the play
 ## Step 15:
 Run the game from the lobby and you're good to go.
 
-**Tip: change player settings to enable resolution dialog. In this way you can easliy run a small windowed version.**
+**Tip: change player settings to enable resolution dialog. In this way you can easily run a small windowed version.**
 
 Now build the game and see how awesome your new multiplayer game is!
