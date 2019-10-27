@@ -164,31 +164,23 @@ We're now going to edit the _PlayerTankController.cs_ to a new version, so it su
 - To support the extended functions from Photon the class must add the following:
 ```C#
 using Photon.Pun;
-
-public class PlayerTankController : MonoBehaviourPunCallbacks, IPunObservable
 ```
-
-The last thing will ask to implement this:
-```C#
-public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-{
-    //TODO: Sending data part here.
-}
-```
-In here you can specify your own networking controls if needed. But we leave it empty for now.
-
 
 - Inside the Update(), all controls are being called regardless who's the owner so we've got to fix this first.
 
 - Above the Movement(), Shooting() and health check, we'll add the following statement:
 ```C#
 if (!photonView.IsMine) return;
+
+    Movement();
+    Shooting();
+    ....
 ``` 
 This will cause the controls only to work on the owner's machine.
 The only thing is, when shooting these bullets will be instantiated locally.
 
 Photon has a different way to instantiate objects across a network.
-So let's change our Instantiate() into this:.
+So let's change our Instantiate() into this, in the Shooting method:
 
 ```C#
 PhotonNetwork.Instantiate("Bullet", SpawnPoint.position, SpawnPoint.rotation);
@@ -243,10 +235,12 @@ public class BulletScript : MonoBehaviourPunCallbacks
     }
 }
 ```
+By extending the class with _MonoBehaviourPunCallbacks_, we can use use the basic MonoBehaviour with an extension on Photon's own implementation features that adds more networking API's.
 
-It will say hey, you, execute this function.
+Instead of calling the AddDamage method. It now tells the server that he needs to send it across the network to other clients.
+This will then say, hey, you, execute this function (locally).
 
-On the PlayerTankControl.cs, we only need to add the following attribute above our AddDamage method and it will be available to be called.
+On the PlayerTankControl.cs, we only need to add the following attribute above our AddDamage method and it will be available to be called by RPC calls.
 ```C#
 [PunRPC]
 ```
@@ -314,7 +308,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
-
     public override void OnPlayerLeftRoom(Player other)
     {
         Debug.LogFormat("OnPlayerLeftRoom() {0}", other.NickName); // seen when other disconnects
@@ -354,6 +347,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
         Debug.Log("PhotonNetwork : Loading Launcher Level");
         PhotonNetwork.LoadLevel(0);
+
+        PhotonNetwork.LeaveRoom();
     }
 
 
@@ -377,7 +372,6 @@ The final steps will contains a spawn button and a leave button. In this way a n
 The last thing we need to do is to make sure our PhotonView attached to the player will oberserve the right things.
 - Drag its Rigidbody into the player prefab. This will sync his position
 - Drag its Transform into here as well. Will sync his rotation. Only check its rotation since we use transform rotation in the script.
-- Drag its player script into here as well. This controls that the player will move across the network.
 
 ## Step 15:
 Run the game from the lobby and you're good to go.
