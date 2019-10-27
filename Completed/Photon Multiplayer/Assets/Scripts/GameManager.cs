@@ -82,6 +82,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
         Debug.Log("PhotonNetwork : Loading Launcher Level");
         PhotonNetwork.LoadLevel(0);
+
+        PhotonNetwork.LeaveRoom();
     }
 
 

@@ -1,7 +1,7 @@
 using Photon.Pun;
 using UnityEngine;
 
-public class PlayerTankController : MonoBehaviourPunCallbacks, IPunObservable
+public class PlayerTankController : MonoBehaviour
 {
     public float MovementSpeed = 4f;
     public Transform SpawnPoint;
@@ -13,8 +13,11 @@ public class PlayerTankController : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField]
     private int _health = 100;
 
+    private PhotonView photonView;
+
     void Start()
     {
+        photonView = GetComponent<PhotonView>();
         _rigidbody = GetComponent<Rigidbody>();
     }
 
@@ -62,10 +65,5 @@ public class PlayerTankController : MonoBehaviourPunCallbacks, IPunObservable
     public void AddDamage(int damage)
     {
         _health -= damage;
-    }
-
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        //TODO: Sending data part here.
     }
 }
