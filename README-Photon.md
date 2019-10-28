@@ -378,7 +378,7 @@ The final steps will contains a spawn button and a leave button. In this way a n
 
 ## Step 14:
 - Go to your player prefab and remove it from the scene. 
-- In the Project view, drag your player into the Resources folder since it will be instantiated across the network as well.
+- In the Project view, drag your player and bullet into the Resources folder since it will be instantiated across the network as well.
 
 The last thing we need to do is to make sure our PhotonView attached to the player will oberserve the right things.
 - Drag its Rigidbody into the player prefab. This will sync his position
