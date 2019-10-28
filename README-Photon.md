@@ -166,6 +166,17 @@ We're now going to edit the _PlayerTankController.cs_ to a new version, so it su
 using Photon.Pun;
 ```
 
+- Inside the the script add the following:
+```C#
+private PhotonView _photonView;
+
+...
+void Start()
+{
+    _photonView = GetComponent<PhotonView>();
+}
+```
+
 - Inside the Update(), all controls are being called regardless who's the owner so we've got to fix this first.
 
 - Above the Movement(), Shooting() and health check, we'll add the following statement:
