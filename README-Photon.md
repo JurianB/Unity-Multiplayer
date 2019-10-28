@@ -197,6 +197,12 @@ So let's change our Instantiate() into this, in the Shooting method:
 PhotonNetwork.Instantiate("Bullet", SpawnPoint.position, SpawnPoint.rotation);
 ```
 
+Since the bullets can be instantiated across the network, the player needs to die as well.
+Destroying has to be done across the network as well, so replace the default destroy with the following.
+```C#
+PhotonNetwork.Destroy(gameObject);
+```
+
 Next up, we need to add damage to the other player when hit.
 Now RPC comes along. RPC stands for Remote Procedure Calls. It will execute a function on a different machine.
 
