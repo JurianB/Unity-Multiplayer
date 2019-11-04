@@ -17,7 +17,7 @@ To save some space on your PC, you can uncheck the demo folders when importing P
 Meanwhile PUN is being imported, navigate to: https://www.photonengine.com/pun and sign up for an account.
 
 ## Step 4:
-When you're account is working, head over to https://dashboard.photonengine.com/en-US/publiccloud to see all your applications.
+When your account is working, head over to https://dashboard.photonengine.com/en-US/publiccloud to see all your applications.
 
 ![Photon Create App](https://github.com/JurianB/Unity-Multiplayer/blob/master/Images/Photon/Photon_Setup1.png)
 
